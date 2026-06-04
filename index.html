@@ -38,7 +38,7 @@
             width: 100%;
             max-width: 390px;
             height: 100%;
-            max-height: 96vh; 
+            max-height: 70vh; 
             background-color: var(--bg-color);
             position: relative;
             overflow: hidden;
@@ -399,7 +399,6 @@
         .msg-meta { font-size: 10px; color: var(--text-muted); display: flex; align-items: flex-end; margin: 0 4px; }
         .msg-other-top { font-size: 11px; color: var(--text-muted); font-weight: 500; display: flex; align-items: center; gap: 4px; }
 
-        /* 하단 바 및 스티커 컨테이너 규격화 */
         .chat-input-bar {
             padding: 8px 10px 15px 10px;
             background: #ffffff;
@@ -447,7 +446,6 @@
             flex-shrink: 0;
         }
 
-        /* 공감 스티커 트레이 스타일 (20종 배치 전용) */
         .sticker-tray-panel {
             position: absolute;
             bottom: 60px;
@@ -502,6 +500,7 @@
 
 <div id="app">
 
+    <!-- 로그인/회원가입 메인 게이트 -->
     <div id="screen-intro" class="screen active">
         <div class="intro-top">
             <h1 style="color: #000000; font-weight:900;">MOO:DROP</h1>
@@ -513,6 +512,7 @@
         </div>
     </div>
 
+    <!-- 로그인 스크린 -->
     <div id="screen-login" class="screen form-screen">
         <div class="form-header"><h2>로그인</h2></div>
         <div class="form-group">
@@ -527,6 +527,7 @@
         <div class="back-text-btn" onclick="showScreen('screen-intro')">돌아가기</div>
     </div>
 
+    <!-- 회원가입 스크린 -->
     <div id="screen-register" class="screen form-screen">
         <div class="form-header"><h2>회원가입</h2></div>
         <div class="form-group">
@@ -553,6 +554,7 @@
         <div class="back-text-btn" onclick="showScreen('screen-intro')">돌아가기</div>
     </div>
 
+    <!-- PROFILE 탭 -->
     <div id="tab-profile" class="screen">
         <div class="screen-header">PROFILE</div>
         <div class="scroll-content">
@@ -564,6 +566,7 @@
         </div>
     </div>
 
+    <!-- CHAT 탭 -->
     <div id="tab-chat" class="screen">
         <div class="screen-header">CHAT</div>
         <div class="scroll-content">
@@ -571,6 +574,7 @@
         </div>
     </div>
 
+    <!-- OTHER 탭 -->
     <div id="tab-other" class="screen">
         <div class="screen-header">OTHER</div>
         <div class="scroll-content">
@@ -591,6 +595,7 @@
         </div>
     </div>
 
+    <!-- 고정 하단 탭 내비게이션 바 -->
     <div id="main-bottom-nav" class="bottom-nav" style="display: none;">
         <div class="nav-item active" id="nav-prof" onclick="switchTab('profile')">
             <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -603,6 +608,7 @@
         </div>
     </div>
 
+    <!-- 서브 레이어: 프로필 상세 팝업 -->
     <div id="sub-profile-detail" class="sub-screen">
         <div class="profile-detail-bg" id="detail-bg-img">
             <button class="close-btn" onclick="closeSubScreen('sub-profile-detail')">
@@ -619,6 +625,7 @@
         </div>
     </div>
 
+    <!-- 서브 레이어: 프라이빗 버블 전용 통합 대화방 -->
     <div id="sub-chat-room" class="sub-screen" style="background-color: #f2f2f7;">
         <div class="chat-room-header">
             <div class="chat-room-left">
@@ -631,6 +638,7 @@
         <div class="chat-messages-area" id="chat-msg-container"></div>
         
         <div class="chat-input-bar">
+            <!-- 공감 스티커 트레이 패널 -->
             <div id="sticker-tray" class="sticker-tray-panel"></div>
 
             <button class="chat-cam-btn" onclick="triggerDummyPhoto()"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></button>
@@ -642,6 +650,7 @@
         </div>
     </div>
 
+    <!-- 서브 레이어: 채팅방 단독 설정 -->
     <div id="sub-chat-setting" class="sub-screen" style="padding: 30px 20px; overflow-y: auto;">
         <div class="form-header"><h2>채팅방 설정</h2></div>
         <div class="form-group"><label>채팅방 이름 변경</label><input type="text" id="edit-chatroom-title"></div>
@@ -653,6 +662,7 @@
         <div class="back-text-btn" onclick="closeSubScreen('sub-chat-setting')">닫기</div>
     </div>
 
+    <!-- 서브 레이어: 마이 프로필 셋팅 수정 모달 -->
     <div id="sub-my-setting" class="sub-screen form-screen">
         <div class="form-header"><h2>프로필 설정 변경</h2></div>
         <div class="form-group"><label>이름</label><input type="text" id="set-my-name"></div>
@@ -666,7 +676,6 @@
 </div>
 
 <script>
-    // 하트 6종 + 감정 및 표정 14종 = 총 20종 스티커 리스트 데이터 규격 정의
     const STICKERS = [
         "❤️", "🧡", "💛", "💚", "💙", "💜", 
         "🥰", "😍", "🤩", "😘", "😋", "😛", 
@@ -703,7 +712,6 @@
     let currentUser = null;
     let activeRoomId = null;
 
-    // 초기 스티커 트레이 컴포넌트 마운트 로직
     window.onload = function() {
         const tray = document.getElementById('sticker-tray');
         STICKERS.forEach(stk => {
@@ -919,7 +927,7 @@
         const room = ROOMS.find(r => r.id === roomId);
         if(!room) return;
         document.getElementById('chat-room-title-text').innerText = room.roomName;
-        document.getElementById('sticker-tray').classList.remove('active'); // 방 이동시 열린 스티커창 초기화
+        document.getElementById('sticker-tray').classList.remove('active');
         renderMessages();
         openSubScreen('sub-chat-room');
     }
@@ -941,8 +949,6 @@
             if(!currentUser.isArtist && m.senderId !== room.artistId && m.senderId !== currentUser.id) return;
 
             const row = document.createElement('div');
-            
-            // 공감 스티커(단일 이모티콘 표기)일 경우 스타일 사이즈 보정용 판정
             const isSingleSticker = STICKERS.includes(m.text);
             const messageStyles = isSingleSticker ? "font-size: 28px; background: transparent; padding:0;" : "";
 
@@ -969,8 +975,11 @@
     function sendMessage() {
         if(messageSubmitLock) return;
         const inputField = document.getElementById('chat-typing-field');
-        const text = inputField.value.trim();
+        let text = inputField.value.trim();
         if(!text) return;
+
+        // 핵심 변경사항: 입력한 메시지 내용 중 '@@@' 텍스트 전체를 현재 로그인 유저의 고유 닉네임(name)으로 자동 치환
+        text = text.replace(/@@@/g, currentUser.name);
 
         messageSubmitLock = true;
         const roomIndex = ROOMS.findIndex(r => r.id === activeRoomId);
