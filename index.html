@@ -38,7 +38,7 @@
             width: 100%;
             max-width: 390px;
             height: 100%;
-            max-height: 90vh; 
+            max-height: 70vh; 
             background-color: var(--bg-color);
             position: relative;
             overflow: hidden;
@@ -253,7 +253,8 @@
             color: var(--text-muted);
             line-height: 1.4;
             white-space: pre-wrap;
-            word-break: break-all;
+            word-break: keep-all;
+            overflow-wrap: break-word;
         }
 
         /* 15각형 회전각 기반 독립형 스타 뱃지 링 */
@@ -297,7 +298,7 @@
             background-position: center;
             background-color: #cbd5e1;
             position: relative;
-            z-index: 1; /* 배경 레이어 기본 배치 */
+            z-index: 1;
         }
         .close-btn {
             position: absolute;
@@ -319,11 +320,11 @@
         .profile-detail-body {
             flex: 1;
             position: relative;
-            padding-top: 65px; /* 잘림 현상을 방지하기 위한 넉넉한 상단 여백 확보 */
+            padding-top: 65px; 
             text-align: center;
             background: var(--bg-color);
             overflow-y: auto; 
-            z-index: 2; /* 배경판보다 한 단계 위로 정렬 */
+            z-index: 2;
         }
         .profile-detail-img {
             width: 90px;
@@ -331,17 +332,17 @@
             border-radius: 50%;
             border: 4px solid var(--bg-color);
             position: absolute;
-            top: -45px; /* 원형 지름의 정확한 절반만큼 위로 올려 균형 배치 */
+            top: -45px; 
             left: 50%;
             transform: translateX(-50%);
             background-size: cover;
             background-position: center;
             background-color: #e1e1e1;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            z-index: 10; /* 배경 레이어보다 무조건 최상위(앞으로) 오도록 격리 설정 */
+            z-index: 10; 
         }
         .detail-name { font-size: 18px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 6px; line-height: 1.3; }
-        .detail-status { font-size: 13px; color: var(--text-muted); padding: 0 20px; line-height: 1.4; white-space: pre-wrap; word-break: break-all; }
+        .detail-status { font-size: 13px; color: var(--text-muted); padding: 0 20px; line-height: 1.4; white-space: pre-wrap; word-break: keep-all; overflow-wrap: break-word; }
         .detail-action-space { margin-top: 30px; padding: 0 30px 20px 30px; }
 
         .chat-room-header {
@@ -380,8 +381,9 @@
             border-radius: 16px;
             font-size: 14px;
             line-height: 1.4;
-            word-break: break-all;
             white-space: pre-wrap; 
+            word-break: keep-all;
+            overflow-wrap: break-word;
         }
         .msg-row.me .msg-bubble {
             background-color: var(--my-bubble);
@@ -471,6 +473,7 @@
 
 <div id="app">
 
+    <!-- 로그인/회원가입 메인 게이트 -->
     <div id="screen-intro" class="screen active">
         <div class="intro-top">
             <h1 style="color: #000000; font-weight:900;">MOO:DROP</h1>
@@ -482,6 +485,7 @@
         </div>
     </div>
 
+    <!-- 로그인 스크린 -->
     <div id="screen-login" class="screen form-screen">
         <div class="form-header"><h2>로그인</h2></div>
         <div class="form-group">
@@ -496,6 +500,7 @@
         <div class="back-text-btn" onclick="showScreen('screen-intro')">돌아가기</div>
     </div>
 
+    <!-- 회원가입 스크린 -->
     <div id="screen-register" class="screen form-screen">
         <div class="form-header"><h2>회원가입</h2></div>
         <div class="form-group">
@@ -522,6 +527,7 @@
         <div class="back-text-btn" onclick="showScreen('screen-intro')">돌아가기</div>
     </div>
 
+    <!-- PROFILE 탭 -->
     <div id="tab-profile" class="screen">
         <div class="screen-header">PROFILE</div>
         <div class="scroll-content">
@@ -533,6 +539,7 @@
         </div>
     </div>
 
+    <!-- CHAT 탭 -->
     <div id="tab-chat" class="screen">
         <div class="screen-header">CHAT</div>
         <div class="scroll-content">
@@ -540,6 +547,7 @@
         </div>
     </div>
 
+    <!-- OTHER 탭 -->
     <div id="tab-other" class="screen">
         <div class="screen-header">OTHER</div>
         <div class="scroll-content">
@@ -560,6 +568,7 @@
         </div>
     </div>
 
+    <!-- 고정 하단 탭 내비게이션 바 -->
     <div id="main-bottom-nav" class="bottom-nav" style="display: none;">
         <div class="nav-item active" id="nav-prof" onclick="switchTab('profile')">
             <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -572,6 +581,7 @@
         </div>
     </div>
 
+    <!-- 서브 레이어: 프로필 상세 팝업 -->
     <div id="sub-profile-detail" class="sub-screen">
         <div class="profile-detail-bg" id="detail-bg-img">
             <button class="close-btn" onclick="closeSubScreen('sub-profile-detail')">
@@ -588,6 +598,7 @@
         </div>
     </div>
 
+    <!-- 서브 레이어: 프라이빗 1:N 버블 전용 통합 대화방 -->
     <div id="sub-chat-room" class="sub-screen" style="background-color: #f2f2f7;">
         <div class="chat-room-header">
             <div class="chat-room-left">
@@ -604,6 +615,7 @@
         </div>
     </div>
 
+    <!-- 서브 레이어: 채팅방 단독 설정 -->
     <div id="sub-chat-setting" class="sub-screen" style="padding: 30px 20px; overflow-y: auto;">
         <div class="form-header"><h2>채팅방 설정</h2></div>
         <div class="form-group"><label>채팅방 이름 변경</label><input type="text" id="edit-chatroom-title"></div>
@@ -615,6 +627,7 @@
         <div class="back-text-btn" onclick="closeSubScreen('sub-chat-setting')">닫기</div>
     </div>
 
+    <!-- 서브 레이어: 마이 프로필 셋팅 수정 모달 -->
     <div id="sub-my-setting" class="sub-screen form-screen">
         <div class="form-header"><h2>프로필 설정 변경</h2></div>
         <div class="form-group"><label>이름</label><input type="text" id="set-my-name"></div>
@@ -631,7 +644,7 @@
     const fallbackUsers = [
         { id: "artist1@mood.com", pw: "1234", name: "루카(LUCA)", birth: "2004-03-15", status: "오늘도 연습 중이야 언제나 화이팅이야!", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150", bg: "https://images.unsplash.com/photo-1557683316-973673baf926?w=500", isArtist: true },
         { id: "artist2@mood.com", pw: "1234", name: "로지(ROSSY)", birth: "2003-11-21", status: "작업실에서 밤샘곡 만드는 중 기대해줘", img: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150", bg: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500", isArtist: true },
-        { id: "fan1@mood.com", pw: "1234", name: "행복한팬마스터", birth: "2001-05-12", status: "아티스트 최고!! 20자가 넘어가면 줄이 바뀌는지 점검하기 위한 긴 상태메시지입니다.", img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150", bg: "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=500", isArtist: false }
+        { id: "fan1@mood.com", pw: "1234", name: "행복한팬마스터", birth: "2001-05-12", status: "아티스트 최고!! 직접 줄바꿈 엔터를 입력하기 전까지는 절대로 인위적인 글자수 기준으로 문장이 쪼개지지 않습니다.", img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150", bg: "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=500", isArtist: false }
     ];
 
     const fallbackRooms = [
@@ -645,7 +658,7 @@
             members: ["artist1@mood.com", "fan1@mood.com"],
             messages: [
                 { senderId: "artist1@mood.com", senderName: "루카(LUCA)", text: "안녕 반가워! 오늘 날씨 정말 좋네 다들 밥은 잘 챙겨먹었어?", time: "12:00" },
-                { senderId: "fan1@mood.com", senderName: "행복한팬마스터", text: "여기서 메시지를 보내면 20자마다 자동으로 줄바꿈이 깔끔하게 처리됩니다.", time: "12:01" }
+                { senderId: "fan1@mood.com", senderName: "행복한팬마스터", text: "여기에 적히는 대화 역시\n사용자가 엔터를 친 시점에만\n정확하게 행이 넘어갑니다.", time: "12:01" }
             ]
         }
     ];
@@ -657,17 +670,6 @@
     let ROOMS = JSON.parse(localStorage.getItem('mood_rooms'));
     let currentUser = null;
     let activeRoomId = null;
-
-    function wrapTextAt20(str) {
-        if (!str) return '';
-        return str.split('\n').map(line => {
-            let chunks = [];
-            for (let i = 0; i < line.length; i += 20) {
-                chunks.push(line.slice(i, i + 20));
-            }
-            return chunks.join('\n');
-        }).join('\n');
-    }
 
     function getArtistBadgeHtml(isArtist) {
         return isArtist ? `<div class="artist-star-badge"><span>★</span></div>` : '';
@@ -769,8 +771,8 @@
             <div class="profile-item" onclick="openProfileDetail('${currentUser.id}')">
                 <div class="profile-img" style="background-image: url('${currentUser.img}')"></div>
                 <div class="profile-info">
-                    <div class="name">${wrapTextAt20(currentUser.name)} ${getArtistBadgeHtml(currentUser.isArtist)}</div>
-                    <div class="sub">${wrapTextAt20(currentUser.status)}</div>
+                    <div class="name">${currentUser.name} ${getArtistBadgeHtml(currentUser.isArtist)}</div>
+                    <div class="sub">${currentUser.status}</div>
                 </div>
             </div>
         `;
@@ -791,8 +793,8 @@
             row.innerHTML = `
                 <div class="profile-img" style="background-image: url('${f.img}')"></div>
                 <div class="profile-info">
-                    <div class="name">${wrapTextAt20(f.name)} ${getArtistBadgeHtml(f.isArtist)}</div>
-                    <div class="sub">${wrapTextAt20(f.status)}</div>
+                    <div class="name">${f.name} ${getArtistBadgeHtml(f.isArtist)}</div>
+                    <div class="sub">${f.status}</div>
                 </div>
             `;
             friendContainer.appendChild(row);
@@ -805,8 +807,8 @@
 
         document.getElementById('detail-bg-img').style.backgroundImage = `url('${target.bg}')`;
         document.getElementById('detail-user-img').style.backgroundImage = `url('${target.img}')`;
-        document.getElementById('detail-user-name').innerHTML = `${wrapTextAt20(target.name)} ${getArtistBadgeHtml(target.isArtist)}`;
-        document.getElementById('detail-user-status').innerText = wrapTextAt20(target.status);
+        document.getElementById('detail-user-name').innerHTML = `${target.name} ${getArtistBadgeHtml(target.isArtist)}`;
+        document.getElementById('detail-user-status').innerText = target.status;
 
         const chatBtn = document.getElementById('detail-chat-turn-btn');
         chatBtn.onclick = () => {
@@ -839,8 +841,8 @@
             item.innerHTML = `
                 <div class="profile-img" style="background-image: url('${r.img}')"></div>
                 <div class="profile-info">
-                    <div class="name">${wrapTextAt20(r.roomName)} <span style="font-size:11px; color:var(--text-muted); font-weight:normal;">[Private]</span></div>
-                    <div class="sub">${wrapTextAt20(lastMsg)}</div>
+                    <div class="name">${r.roomName} <span style="font-size:11px; color:var(--text-muted); font-weight:normal;">[Private]</span></div>
+                    <div class="sub">${lastMsg}</div>
                 </div>
             `;
             container.appendChild(item);
@@ -872,19 +874,18 @@
             if(!currentUser.isArtist && m.senderId !== room.artistId && m.senderId !== currentUser.id) return;
 
             const row = document.createElement('div');
-            let processedText = wrapTextAt20(m.text);
 
             if(m.senderId === currentUser.id) {
                 row.className = 'msg-row me';
-                row.innerHTML = `<div class="msg-bubble">${processedText}</div>`;
+                row.innerHTML = `<div class="msg-bubble">${m.text}</div>`;
             } else {
                 row.className = 'msg-row other';
                 const sender = USERS.find(u => u.id === m.senderId) || { name: m.senderName, img: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150", isArtist: false };
                 row.innerHTML = `
                     <div class="profile-img" style="width:34px; height:34px; background-image:url('${sender.img}')"></div>
                     <div class="msg-other-content">
-                        <div class="msg-other-top">${wrapTextAt20(sender.name)} ${getArtistBadgeHtml(sender.isArtist)} <span style="font-size:10px; font-weight:normal; margin-left:4px;">${m.time}</span></div>
-                        <div class="msg-bubble">${processedText}</div>
+                        <div class="msg-other-top">${sender.name} ${getArtistBadgeHtml(sender.isArtist)} <span style="font-size:10px; font-weight:normal; margin-left:4px;">${m.time}</span></div>
+                        <div class="msg-bubble">${m.text}</div>
                     </div>
                 `;
             }
@@ -942,7 +943,7 @@
             row.innerHTML = `
                 <div style="display:flex; align-items:center; gap:8px;">
                     <div class="profile-img" style="width:26px; height:26px; background-image:url('${u.img}')"></div>
-                    <div style="display:flex; align-items:center; gap:3px;">${wrapTextAt20(u.name)} ${getArtistBadgeHtml(u.isArtist)}</div>
+                    <div style="display:flex; align-items:center; gap:3px;">${u.name} ${getArtistBadgeHtml(u.isArtist)}</div>
                 </div>
             `;
             listContainer.appendChild(row);
@@ -974,7 +975,7 @@
 
     function renderOtherTab() {
         document.getElementById('other-my-img').style.backgroundImage = `url('${currentUser.img}')`;
-        document.getElementById('other-my-name').innerHTML = `${wrapTextAt20(currentUser.name)} ${getArtistBadgeHtml(currentUser.isArtist)}`;
+        document.getElementById('other-my-name').innerHTML = `${currentUser.name} ${getArtistBadgeHtml(currentUser.isArtist)}`;
     }
 
     function openSettingModal() {
