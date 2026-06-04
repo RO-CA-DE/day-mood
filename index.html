@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MOO:DROP</title>
     <style>
         :root {
@@ -10,7 +10,7 @@
             --card-bg: #ffffff;
             --text-main: #1c1c1e;
             --text-muted: #8e8e93;
-            --point-color: #b3e5fc; /* 연하늘색 */
+            --point-color: #b3e5fc;
             --my-bubble: #b3e5fc;
             --other-bubble: #1c1c1e;
             --border-color: #e5e5ea;
@@ -30,17 +30,20 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
+            overflow: hidden;
         }
 
-        /* 스마트폰 프레임 내부 고정 크기 */
+        /* [수정] ASUS 노트북 편집기 환경을 위한 높이 축소 및 스크롤 전면 보장 */
         #app {
-            width: 390px;
-            height: 844px;
+            width: 100%;
+            max-width: 390px;
+            height: 100%;
+            max-height: 70vh; /* 편집 화면을 가리지 않게 전체 높이를 확실히 축소 */
             background-color: var(--bg-color);
             position: relative;
             overflow: hidden;
             box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
-            border-radius: 40px;
+            border-radius: 30px;
             display: flex;
             flex-direction: column;
         }
@@ -52,29 +55,29 @@
             flex-direction: column;
             position: relative;
             background-color: var(--bg-color);
+            overflow: hidden;
         }
 
         .screen.active {
             display: flex;
         }
 
-        /* 공통 헤더 스타일 */
         .screen-header {
-            padding: 60px 20px 15px 20px;
-            font-size: 32px;
+            padding: 30px 20px 10px 20px;
+            font-size: 28px;
             font-weight: 800;
             letter-spacing: -1px;
             color: var(--text-main);
             background: var(--bg-color);
             border-bottom: 1px solid transparent;
+            flex-shrink: 0;
         }
 
-        /* 하단 탭 바 (상단 양쪽 둥글게 + 그림자) */
         .bottom-nav {
             position: absolute;
             bottom: 0;
             width: 100%;
-            height: 85px;
+            height: 65px;
             background: #ffffff;
             border-top-left-radius: 24px;
             border-top-right-radius: 24px;
@@ -82,8 +85,9 @@
             display: flex;
             justify-content: space-around;
             align-items: center;
-            padding-bottom: 20px;
+            padding-bottom: 5px;
             z-index: 10;
+            flex-shrink: 0;
         }
 
         .nav-item {
@@ -96,8 +100,8 @@
         }
 
         .nav-item svg {
-            width: 26px;
-            height: 26px;
+            width: 24px;
+            height: 24px;
             fill: none;
             stroke: var(--text-muted);
             stroke-width: 2px;
@@ -109,15 +113,15 @@
             fill: rgba(179, 229, 252, 0.2);
         }
 
-        /* 1. 인트로 스크린 */
         #screen-intro {
             justify-content: space-between;
-            padding: 100px 30px 60px 30px;
+            padding: 50px 30px 30px 30px;
             text-align: center;
+            overflow-y: auto;
         }
 
         .intro-top h1 {
-            font-size: 42px;
+            font-size: 36px;
             font-weight: 900;
             letter-spacing: 2px;
             margin-bottom: 10px;
@@ -125,23 +129,24 @@
 
         .intro-top p {
             color: var(--text-muted);
-            font-size: 14px;
+            font-size: 13px;
             line-height: 1.4;
         }
 
         .intro-buttons {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
+            margin-top: 20px;
         }
 
         .btn-black {
             background-color: #000000;
             color: #ffffff;
             border: none;
-            padding: 16px;
+            padding: 14px;
             border-radius: 14px;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
             cursor: pointer;
             width: 100%;
@@ -152,72 +157,88 @@
             opacity: 0.8;
         }
 
-        /* 로그인 / 회원가입 폼 양식 */
         .form-screen {
-            padding: 60px 24px;
+            padding: 30px 24px;
+            overflow-y: auto; /* [수정] 폼 화면 스크롤 절대 보장 */
         }
+        .form-screen::-webkit-scrollbar { display: none; }
         .form-header {
-            margin-bottom: 40px;
-        }
-        .form-header h2 { font-size: 28px; font-weight: 700; }
-        .form-group {
             margin-bottom: 20px;
+        }
+        .form-header h2 { font-size: 24px; font-weight: 700; }
+        .form-group {
+            margin-bottom: 12px;
         }
         .form-group label {
             display: block;
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-muted);
-            margin-bottom: 6px;
+            margin-bottom: 4px;
             padding-left: 4px;
         }
         .form-group input {
             width: 100%;
-            padding: 14px;
+            padding: 12px;
             border-radius: 12px;
             border: 1px solid var(--border-color);
             background-color: #ffffff;
-            font-size: 15px;
+            font-size: 14px;
             outline: none;
         }
-        .back-text-btn {
-            text-align: center;
-            margin-top: 20px;
-            color: var(--text-muted);
+        
+        /* [추정/신규] 아티스트 자격 선택용 체크박스 래퍼 스타일 */
+        .check-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 15px 0;
             font-size: 14px;
+            font-weight: 600;
             cursor: pointer;
         }
+        .check-container input {
+            width: 18px;
+            height: 18px;
+        }
 
-        /* 스크롤 컨테이너 */
+        .back-text-btn {
+            text-align: center;
+            margin-top: 15px;
+            color: var(--text-muted);
+            font-size: 13px;
+            cursor: pointer;
+            padding-bottom: 10px;
+        }
+
+        /* [수정] 스크롤 다 되게 패딩 가이드라인 가볍게 최적화 */
         .scroll-content {
             flex: 1;
             overflow-y: auto;
-            padding: 0 20px 100px 20px;
+            padding: 0 20px 80px 20px;
         }
         .scroll-content::-webkit-scrollbar { display: none; }
 
-        /* 소제목 */
         .section-title {
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-muted);
-            margin: 15px 0 8px 0;
+            margin: 12px 0 6px 0;
             font-weight: 500;
         }
 
-        /* 리스트 아이템 컴포넌트 */
         .profile-item {
             display: flex;
             align-items: center;
-            padding: 12px 0;
+            padding: 10px 0;
             border-bottom: 1px solid var(--border-color);
             cursor: pointer;
         }
         .profile-img {
-            width: 50px;
-            height: 50px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             background-size: cover;
             background-position: center;
-            margin-right: 14px;
+            margin-right: 12px;
             background-color: #e1e1e1;
             flex-shrink: 0;
         }
@@ -226,20 +247,19 @@
             overflow: hidden;
         }
         .profile-info .name {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
             color: var(--text-main);
-            margin-bottom: 3px;
+            margin-bottom: 2px;
         }
         .profile-info .sub {
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-muted);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
-        /* 디테일 모달/화면 */
         .sub-screen {
             position: absolute;
             top: 0;
@@ -250,12 +270,12 @@
             z-index: 20;
             display: none;
             flex-direction: column;
+            overflow: hidden;
         }
         .sub-screen.active { display: flex; }
 
-        /* 프로필 상세화면 */
         .profile-detail-bg {
-            height: 45%;
+            height: 35%;
             background-size: cover;
             background-position: center;
             background-color: #cbd5e1;
@@ -263,10 +283,10 @@
         }
         .close-btn {
             position: absolute;
-            top: 50px;
+            top: 20px;
             left: 20px;
-            width: 36px;
-            height: 36px;
+            width: 32px;
+            height: 32px;
             background: rgba(0,0,0,0.3);
             border-radius: 50%;
             display: flex;
@@ -275,74 +295,71 @@
             cursor: pointer;
             border: none;
         }
-        .close-btn svg { width: 18px; height: 18px; stroke: #ffffff; stroke-width: 2.5px; }
+        .close-btn svg { width: 16px; height: 16px; stroke: #ffffff; stroke-width: 2.5px; }
         
         .profile-detail-body {
             flex: 1;
             position: relative;
-            padding-top: 65px;
+            padding-top: 55px;
             text-align: center;
             background: var(--bg-color);
+            overflow-y: auto; /* 상세 프로필 스크롤 보장 */
         }
         .profile-detail-img {
-            width: 100px;
-            height: 100px;
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
             border: 4px solid var(--bg-color);
             position: absolute;
-            top: -50px;
+            top: -40px;
             left: 50%;
             transform: translateX(-50%);
             background-size: cover;
             background-position: center;
             background-color: #e1e1e1;
         }
-        .detail-name { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
-        .detail-status { font-size: 14px; color: var(--text-muted); padding: 0 30px; }
+        .detail-name { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+        .detail-status { font-size: 13px; color: var(--text-muted); padding: 0 20px; }
         .detail-action-space {
-            position: absolute;
-            bottom: 110px;
-            left: 0;
-            width: 100%;
-            padding: 0 30px;
+            margin-top: 30px;
+            padding: 0 30px 20px 30px;
         }
 
-        /* 채팅룸 관련 구조 */
         .chat-room-header {
-            padding: 50px 15px 15px 15px;
+            padding: 30px 15px 12px 15px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             border-bottom: 1px solid var(--border-color);
             background: #ffffff;
+            flex-shrink: 0;
         }
-        .chat-room-left { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; }
+        .chat-room-left { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 16px; }
         .back-arrow { cursor: pointer; display: flex; align-items: center; }
-        .back-arrow svg { width: 24px; height: 24px; stroke: var(--text-main); stroke-width: 2px; }
+        .back-arrow svg { width: 22px; height: 22px; stroke: var(--text-main); stroke-width: 2px; }
         .setting-icon-btn { cursor: pointer; display: flex; align-items: center; }
-        .setting-icon-btn svg { width: 24px; height: 24px; stroke: var(--text-main); stroke-width: 2px; fill: none; }
+        .setting-icon-btn svg { width: 22px; height: 22px; stroke: var(--text-main); stroke-width: 2px; fill: none; }
 
         .chat-messages-area {
             flex: 1;
-            overflow-y: auto;
-            padding: 20px;
+            overflow-y: auto; /* [수정] 말풍선 스크롤 보장 */
+            padding: 15px;
             background-color: #f2f2f7;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
         }
         .chat-messages-area::-webkit-scrollbar { display: none; }
 
-        /* 말풍선 배치 */
         .msg-row { display: flex; width: 100%; }
         .msg-row.me { justify-content: flex-end; }
-        .msg-row.other { justify-content: flex-start; gap: 8px; }
+        .msg-row.other { justify-content: flex-start; gap: 6px; }
 
         .msg-bubble {
             max-width: 65%;
-            padding: 10px 14px;
-            border-radius: 18px;
-            font-size: 15px;
+            padding: 8px 12px;
+            border-radius: 16px;
+            font-size: 14px;
             line-height: 1.4;
             word-break: break-all;
         }
@@ -357,22 +374,22 @@
             border-top-left-radius: 4px;
         }
         .msg-other-content { display: flex; flex-direction: column; gap: 2px; max-width: 70%; }
-        .msg-meta { font-size: 11px; color: var(--text-muted); display: flex; align-items: flex-end; margin: 0 4px; }
-        .msg-other-top { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+        .msg-meta { font-size: 10px; color: var(--text-muted); display: flex; align-items: flex-end; margin: 0 4px; }
+        .msg-other-top { font-size: 11px; color: var(--text-muted); font-weight: 500; }
 
-        /* 채팅 전송바 규격화 */
         .chat-input-bar {
-            padding: 10px 12px 30px 12px;
+            padding: 8px 10px 15px 10px;
             background: #ffffff;
             border-top: 1px solid var(--border-color);
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             width: 100%;
+            flex-shrink: 0;
         }
         .chat-cam-btn {
-            width: 42px;
-            height: 42px;
+            width: 38px;
+            height: 38px;
             background-color: #f2f2f7;
             border-radius: 10px;
             display: flex;
@@ -382,75 +399,72 @@
             border: none;
             flex-shrink: 0;
         }
-        .chat-cam-btn svg { width: 22px; height: 22px; fill: var(--text-muted); }
+        .chat-cam-btn svg { width: 20px; height: 20px; fill: var(--text-muted); }
         .chat-text-input {
             flex: 1;
-            height: 42px;
+            height: 38px;
             background-color: #f2f2f7;
             border: none;
-            border-radius: 20px;
-            padding: 0 16px;
-            font-size: 15px;
+            border-radius: 18px;
+            padding: 0 14px;
+            font-size: 14px;
             outline: none;
         }
         .chat-send-btn {
-            height: 42px;
-            padding: 0 16px;
+            height: 38px;
+            padding: 0 14px;
             background-color: var(--text-main);
             color: #ffffff;
             border: none;
-            border-radius: 20px;
-            font-size: 14px;
+            border-radius: 18px;
+            font-size: 13px;
             font-weight: 600;
             cursor: pointer;
             flex-shrink: 0;
         }
 
-        /* 그룹채팅 생성 전용 플로팅/상단 버튼 */
         .add-chat-row {
             display: flex;
             justify-content: flex-end;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
         .btn-small-gray {
             background: #e5e5ea;
             border: none;
-            padding: 8px 14px;
-            border-radius: 15px;
-            font-size: 13px;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 12px;
             font-weight: 600;
             cursor: pointer;
         }
 
-        /* 체크박스 리스트 */
         .check-item {
             display: flex;
             align-items: center;
-            padding: 12px 0;
+            padding: 10px 0;
             border-bottom: 1px solid var(--border-color);
         }
         .check-item input[type="checkbox"] {
-            width: 22px;
-            height: 22px;
-            margin-right: 15px;
+            width: 18px;
+            height: 18px;
+            margin-right: 12px;
             cursor: pointer;
         }
 
-        /* 설정창 항목 */
         .setting-box-container {
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin-top: 20px;
-            gap: 15px;
+            margin-top: 15px;
+            gap: 10px;
         }
         .round-rect-btn {
             width: 100%;
             background: #ffffff;
             border: 1px solid var(--border-color);
-            padding: 18px;
-            border-radius: 16px;
-            font-size: 16px;
+            padding: 14px;
+            border-radius: 14px;
+            font-size: 14px;
             font-weight: 700;
             text-align: left;
             cursor: pointer;
@@ -459,16 +473,15 @@
             align-items: center;
         }
 
-        /* 공지사항 아코디언 */
         .notice-item {
             background: #ffffff;
             border-radius: 12px;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             overflow: hidden;
             border: 1px solid var(--border-color);
         }
         .notice-title-bar {
-            padding: 15px;
+            padding: 12px;
             font-weight: 600;
             cursor: pointer;
             display: flex;
@@ -476,15 +489,14 @@
             background: #ffffff;
         }
         .notice-content {
-            padding: 15px;
+            padding: 12px;
             background: #f8f9fa;
             border-top: 1px solid var(--border-color);
             display: none;
-            font-size: 14px;
+            font-size: 13px;
             line-height: 1.5;
         }
 
-        /* 그룹채팅 설정화면 전용 */
         .danger-text { color: #ff3b30 !important; font-weight: 700; }
     </style>
 </head>
@@ -513,17 +525,17 @@
         </div>
         <div class="form-group">
             <label>이메일 아이디</label>
-            <input type="email" id="login-id" placeholder="example@mood.com" value="jse131121@mood.com">
+            <input type="email" id="login-id" placeholder="example@mood.com" value="artist1@mood.com">
         </div>
         <div class="form-group">
             <label>비밀번호</label>
-            <input type="password" id="login-pw" placeholder="비밀번호를 입력하세요" value="01024773752">
+            <input type="password" id="login-pw" placeholder="비밀번호를 입력하세요" value="1234">
         </div>
-        <button class="btn-black" style="margin-top: 20px;" onclick="handleLogin()">로그인 완료</button>
+        <button class="btn-black" style="margin-top: 15px;" onclick="handleLogin()">로그인 완료</button>
         <div class="back-text-btn" onclick="showScreen('screen-intro')">돌아가기</div>
     </div>
 
-    <!-- 1-3. 회원가입 스크린 -->
+    <!-- 1-3. 회원가입 스크린 (아티스트 자격 추가) -->
     <div id="screen-register" class="screen form-screen">
         <div class="form-header">
             <h2>회원가입</h2>
@@ -537,20 +549,27 @@
             <input type="password" id="reg-pw" placeholder="비밀번호를 입력하세요">
         </div>
         <div class="form-group">
-            <label>이름</label>
+            <label>이름 (닉네임)</label>
             <input type="text" id="reg-name" placeholder="이름을 입력하세요">
         </div>
         <div class="form-group">
             <label>생년월일 (YYYY-MM-DD)</label>
             <input type="text" id="reg-birth" placeholder="예: 2000-01-01">
         </div>
-        <button class="btn-black" style="margin-top: 20px;" onclick="handleRegister()">가입 완료</button>
+        
+        <!-- [수정] 아티스트 지정용 전용 체크박스 추가 -->
+        <label class="check-container">
+            <input type="checkbox" id="reg-is-artist">
+            <span>나 지금 아티스트입니다 체크</span>
+        </label>
+
+        <button class="btn-black" style="margin-top: 15px;" onclick="handleRegister()">가입 완료</button>
         <div class="back-text-btn" onclick="showScreen('screen-intro')">돌아가기</div>
     </div>
 
 
     <!-- ========================================== -->
-    <!-- 메인 탭 화면들 (로그인 후 진입) -->
+    <!-- 메인 탭 화면들 -->
     <!-- ========================================== -->
 
     <!-- 2. 프로필 탭 -->
@@ -560,7 +579,7 @@
             <div class="section-title">내 프로필</div>
             <div id="my-profile-card"></div>
             
-            <div class="section-title" style="margin-top: 25px;">내 친구</div>
+            <div class="section-title" style="margin-top: 20px;">내 친구 (아티스트만 표시)</div>
             <div id="friend-list-container"></div>
         </div>
     </div>
@@ -569,7 +588,7 @@
     <div id="tab-chat" class="screen">
         <div class="screen-header">CHAT</div>
         <div class="scroll-content">
-            <div class="add-chat-row">
+            <div class="add-chat-row" id="group-chat-btn-wrapper" style="display:none;">
                 <button class="btn-small-gray" onclick="openCreateChatModal()">+ 그룹 채팅 만들기</button>
             </div>
             <div id="chat-list-container"></div>
@@ -580,9 +599,9 @@
     <div id="tab-other" class="screen">
         <div class="screen-header">OTHER</div>
         <div class="scroll-content">
-            <div style="display:flex; flex-direction:column; align-items:center; margin: 20px 0 30px 0;">
-                <div id="other-my-img" class="profile-img" style="width:80px; height:80px; margin-right:0; margin-bottom:12px;"></div>
-                <div id="other-my-name" style="font-size:20px; font-weight:700;">이름</div>
+            <div style="display:flex; flex-direction:column; align-items:center; margin: 10px 0 15px 0;">
+                <div id="other-my-img" class="profile-img" style="width:60px; height:60px; margin-right:0; margin-bottom:8px;"></div>
+                <div id="other-my-name" style="font-size:16px; font-weight:700;">이름</div>
             </div>
 
             <div class="setting-box-container">
@@ -602,9 +621,7 @@
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- 고정 하단 탭 바 컨트롤 컴포넌트 -->
-    <!-- ========================================== -->
+    <!-- 고정 하단 탭 바 -->
     <div id="main-bottom-nav" class="bottom-nav" style="display: none;">
         <div class="nav-item active" id="nav-prof" onclick="switchTab('profile')">
             <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -619,10 +636,10 @@
 
 
     <!-- ========================================== -->
-    <!-- 서브 스크린 및 모달 레이어 (오류 방지 독립식) -->
+    <!-- 서브 스크린 및 모달 레이어 -->
     <!-- ========================================== -->
 
-    <!-- 프로필 상세 보기 창 -->
+    <!-- 프로필 상세 창 -->
     <div id="sub-profile-detail" class="sub-screen">
         <div class="profile-detail-bg" id="detail-bg-img">
             <button class="close-btn" onclick="closeSubScreen('sub-profile-detail')">
@@ -639,7 +656,7 @@
         </div>
     </div>
 
-    <!-- 실제 실시간 대화방 내부 화면 -->
+    <!-- 1:N 버블 전용 통합 대화방 -->
     <div id="sub-chat-room" class="sub-screen" style="background-color: #f2f2f7;">
         <div class="chat-room-header">
             <div class="chat-room-left">
@@ -656,7 +673,7 @@
         </div>
     </div>
 
-    <!-- 그룹채팅 생성 모달 -->
+    <!-- 그룹채팅 생성 모달 (아티스트에게는 일반 그룹 생성 보장용) -->
     <div id="sub-create-chat" class="sub-screen form-screen">
         <div class="form-header"><h2>그룹채팅 생성</h2></div>
         <div class="form-group">
@@ -664,13 +681,13 @@
             <input type="text" id="new-chat-title" placeholder="방 이름을 적어주세요">
         </div>
         <div class="section-title">초대할 친구 선택</div>
-        <div id="invite-checkbox-container" style="max-height:350px; overflow-y:auto; margin-bottom:20px;"></div>
+        <div id="invite-checkbox-container" style="max-height:180px; overflow-y:auto; margin-bottom:15px;"></div>
         <button class="btn-black" onclick="submitCreateChat()">생성하기</button>
         <div class="back-text-btn" onclick="closeSubScreen('sub-create-chat')">취소</div>
     </div>
 
     <!-- 채팅방 설정 스크린 -->
-    <div id="sub-chat-setting" class="sub-screen" style="padding: 60px 20px;">
+    <div id="sub-chat-setting" class="sub-screen" style="padding: 30px 20px; overflow-y: auto;">
         <div class="form-header"><h2>채팅방 설정</h2></div>
         <div class="form-group">
             <label>채팅방 이름 변경</label>
@@ -678,12 +695,12 @@
         </div>
         <div class="form-group">
             <label>채팅방 프로필 사진 이미지 URL</label>
-            <input type="text" id="edit-chatroom-img" placeholder="이미지 주소를 입력하세요">
+            <input type="text" id="edit-chatroom-img">
         </div>
-        <button class="btn-black" style="padding:10px; margin-bottom:20px;" onclick="saveChatRoomSetting()">방 정보 수정 완료</button>
+        <button class="btn-black" style="padding:10px; margin-bottom:15px;" onclick="saveChatRoomSetting()">방 정보 수정 완료</button>
         
         <div class="section-title">참여중인 사람 목록</div>
-        <div id="chatroom-member-list" style="max-height:200px; overflow-y:auto; margin-bottom:20px;"></div>
+        <div id="chatroom-member-list" style="max-height:120px; overflow-y:auto; margin-bottom:15px;"></div>
         
         <button class="round-rect-btn danger-text" onclick="leaveChatRoom()" style="justify-content:center; border-color:#ff3b30;">나가기</button>
         <div class="back-text-btn" onclick="closeSubScreen('sub-chat-setting')">닫기</div>
@@ -694,57 +711,66 @@
         <div class="form-header"><h2>프로필 설정 변경</h2></div>
         <div class="form-group"><label>이름</label><input type="text" id="set-my-name"></div>
         <div class="form-group"><label>상태메세지</label><input type="text" id="set-my-status"></div>
-        <div class="form-group"><label>프로필 사진 URL</label><input type="text" id="set-my-img" placeholder="이미지 URL 주소"></div>
-        <div class="form-group"><label>배경 사진 URL</label><input type="text" id="set-my-bg" placeholder="이미지 URL 주소"></div>
+        <div class="form-group"><label>프로필 사진 URL</label><input type="text" id="set-my-img"></div>
+        <div class="form-group"><label>배경 사진 URL</label><input type="text" id="set-my-bg"></div>
         <button class="btn-black" onclick="saveMySetting()">저장하기</button>
         <div class="back-text-btn" onclick="closeSubScreen('sub-my-setting')">취소</div>
     </div>
 
     <!-- 공지사항(NOTICE) 모달 -->
-    <div id="sub-notice" class="sub-screen" style="padding:60px 20px;">
+    <div id="sub-notice" class="sub-screen" style="padding:30px 20px; overflow-y:auto;">
         <div class="form-header" style="display:flex; justify-content:space-between; align-items:center;">
             <h2>공지사항</h2>
             <button class="btn-small-gray" id="admin-notice-write-btn" style="display:none;" onclick="toggleNoticeForm()">글쓰기</button>
         </div>
-        <div id="admin-notice-form" style="display:none; background:#ffffff; padding:15px; border-radius:12px; margin-bottom:15px; border:1px solid var(--border-color);">
-            <input type="text" id="new-notice-title" placeholder="공지 제목" style="width:100%; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid var(--border-color);"><br>
-            <textarea id="new-notice-content" placeholder="공지 내용" style="width:100%; height:80px; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid var(--border-color); resize:none;"></textarea>
-            <button class="btn-black" style="padding:10px;" onclick="submitNotice()">등록</button>
+        <div id="admin-notice-form" style="display:none; background:#ffffff; padding:12px; border-radius:12px; margin-bottom:10px; border:1px solid var(--border-color);">
+            <input type="text" id="new-notice-title" placeholder="공지 제목" style="width:100%; padding:8px; margin-bottom:8px; border-radius:8px; border:1px solid var(--border-color);"><br>
+            <textarea id="new-notice-content" placeholder="공지 내용" style="width:100%; height:60px; padding:8px; margin-bottom:8px; border-radius:8px; border:1px solid var(--border-color); resize:none;"></textarea>
+            <button class="btn-black" style="padding:8px;" onclick="submitNotice()">등록</button>
         </div>
-        <div id="notice-list-container" style="flex:1; overflow-y:auto;"></div>
+        <div id="notice-list-container" style="flex:1; overflow-y:auto; max-height:240px;"></div>
         <div class="back-text-btn" onclick="closeSubScreen('sub-notice')">닫기</div>
     </div>
 
 </div>
 
 <!-- ========================================== -->
-<!-- 고강도 핵심 비즈니스 로직 스크립트 -->
+<!-- 1:N 버블 전용 시스템 엔진 스크립트 -->
 <!-- ========================================== -->
 <script>
-    // 시스템 초기 핵심 프리셋 데이터 생성
     const fallbackUsers = [
-        { id: "jse131121@mood.com", pw: "01024773752", name: "관리자마스터", birth: "1998-11-21", status: "MOO:DROP 시스템 총괄 관리자 모드", img: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150", bg: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500" },
-        { id: "friend1@mood.com", pw: "1234", name: "김하늘", birth: "2001-05-12", status: "오늘 날씨 완전 연하늘빛 가득!", img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150", bg: "https://images.unsplash.com/photo-1557683316-973673baf926?w=500" },
-        { id: "friend2@mood.com", pw: "1234", name: "이무드", birth: "1999-08-24", status: "Mood with your friend.", img: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150", bg: "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=500" },
-        { id: "friend3@mood.com", pw: "1234", name: "박드롭", birth: "2002-12-05", status: "배고프다 연락줘", img: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=150", bg: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=500" }
+        { id: "artist1@mood.com", pw: "1234", name: "루카(LUCA)", birth: "2004-03-15", status: "오늘도 연습 중이야 @@@ 잘 지내? ✨", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150", bg: "https://images.unsplash.com/photo-1557683316-973673baf926?w=500", isArtist: true },
+        { id: "artist2@mood.com", pw: "1234", name: "로지(ROSSY)", birth: "2003-11-21", status: "@@@을 위한 특별곡 작업 시작 🎵", img: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150", bg: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500", isArtist: true },
+        { id: "fan1@mood.com", pw: "1234", name: "행복한팬", birth: "2001-05-12", status: "최애 최고", img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150", bg: "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=500", isArtist: false },
+        { id: "fan2@mood.com", pw: "1234", name: "무드코더", birth: "1999-08-24", status: "ASUS 노트북으로 코딩중", img: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150", bg: "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=500", isArtist: false }
     ];
 
-    const fallbackNotices = [
-        { title: "MOO:DROP 2026 그랜드 런칭 안내", content: "안녕하세요. MOO:DROP 감성 서비스에 오신 것을 환영합니다.\n본 계정간의 무결성 대화 시스템이 온전하게 가동중입니다." },
-        { title: "보안 가동 공지", content: "모든 채팅방 오작동 방지 기술 필터가 적용되어 튕김, 지연, 더블전송이 근본적으로 차단됩니다." }
+    const fallbackRooms = [
+        {
+            id: "bubble_artist1",
+            isGroup: true,
+            isBubble: true,
+            roomName: "루카(LUCA) 프라이빗 버블",
+            img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150",
+            artistId: "artist1@mood.com",
+            members: ["artist1@mood.com", "fan1@mood.com", "fan2@mood.com"],
+            messages: [
+                { senderId: "artist1@mood.com", senderName: "루카(LUCA)", text: "안녕 @@@! 오늘 날씨 진짜 좋다 그치?", time: "12:00" },
+                { senderId: "fan1@mood.com", senderName: "행복한팬", text: "루카야 보고싶어!!", time: "12:01" },
+                { senderId: "fan2@mood.com", senderName: "무드코더", text: "ASUS 화면에서 잘 보여요!!", time: "12:02" }
+            ]
+        }
     ];
 
-    // 데이터 저장 관리
     if(!localStorage.getItem('mood_users')) localStorage.setItem('mood_users', JSON.stringify(fallbackUsers));
-    if(!localStorage.getItem('mood_notices')) localStorage.setItem('mood_notices', JSON.stringify(fallbackNotices));
-    if(!localStorage.getItem('mood_rooms')) localStorage.setItem('mood_rooms', JSON.stringify([]));
+    if(!localStorage.getItem('mood_rooms')) localStorage.setItem('mood_rooms', JSON.stringify(fallbackRooms));
+    if(!localStorage.getItem('mood_notices')) localStorage.setItem('mood_notices', JSON.stringify([]));
 
     let USERS = JSON.parse(localStorage.getItem('mood_users'));
     let ROOMS = JSON.parse(localStorage.getItem('mood_rooms'));
     let currentUser = null;
     let activeRoomId = null;
 
-    // 네비게이션 및 화면 전환 메커니즘
     function showScreen(screenId) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById(screenId).classList.add('active');
@@ -772,21 +798,19 @@
     function openSubScreen(id) { document.getElementById(id).classList.add('active'); }
     function closeSubScreen(id) { document.getElementById(id).classList.remove('active'); }
 
-    // 데이터 싱크론
     function saveData() {
         localStorage.setItem('mood_users', JSON.stringify(USERS));
         localStorage.setItem('mood_rooms', JSON.stringify(ROOMS));
     }
 
-    // 1. 회원 처리 시스템
     function handleLogin() {
         const id = document.getElementById('login-id').value.trim();
         const pw = document.getElementById('login-pw').value.trim();
-        
         const user = USERS.find(u => u.id === id && u.pw === pw);
         if(user) {
             currentUser = user;
             document.getElementById('main-bottom-nav').style.display = 'flex';
+            document.getElementById('group-chat-btn-wrapper').style.display = currentUser.isArtist ? 'flex' : 'none';
             switchTab('profile');
         } else {
             alert('아이디 또는 비밀번호가 올바르지 않습니다.');
@@ -798,26 +822,45 @@
         const pw = document.getElementById('reg-pw').value.trim();
         const name = document.getElementById('reg-name').value.trim();
         const birth = document.getElementById('reg-birth').value.trim();
+        const isArtist = document.getElementById('reg-is-artist').checked;
 
         if(!id || !pw || !name || !birth) {
-            alert('모든 양식을 정확하게 입력해주세요.');
+            alert('양식을 다 입력하세요.');
             return;
         }
         if(USERS.some(u => u.id === id)) {
-            alert('이미 존재하는 아이디입니다.');
+            alert('중복 아이디 존재.');
             return;
         }
 
         const newUser = {
-            id, pw, name, birth,
-            status: "MOO:DROP에 들어왔습니다.",
+            id, pw, name, birth, isArtist,
+            status: isArtist ? "아티스트 소통 공간입니다. @@@ 반가워!" : "행복한 Mood 공간.",
             img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150",
             bg: "https://images.unsplash.com/photo-1557683316-973673baf926?w=500"
         };
 
         USERS.push(newUser);
+
+        // 만약 새로운 아티스트가 추가되면 전용 버블룸 강제 매칭 연동
+        if(isArtist) {
+            ROOMS.push({
+                id: 'bubble_' + Date.now(),
+                isGroup: true,
+                isBubble: true,
+                roomName: name + " 프라이빗 버블",
+                img: newUser.img,
+                artistId: id,
+                members: [id],
+                messages: []
+            });
+        } else {
+            // 팬인 경우 기존 생성된 모든 아티스트 버블룸방 멤버에 자동 등록 처리
+            ROOMS.forEach(r => { if(r.isBubble) r.members.push(id); });
+        }
+
         saveData();
-        alert('회원가입이 완료되었습니다! 로그인 해주세요.');
+        alert('가입 완료! 설정한 계정으로 로그인해 주세요.');
         showScreen('screen-login');
     }
 
@@ -827,41 +870,44 @@
         showScreen('screen-intro');
     }
 
-    // 2. 프로필 대시보드 렌더링
     function renderProfileTab() {
-        // 내 프로필 카드
         const myCard = document.getElementById('my-profile-card');
         myCard.innerHTML = `
             <div class="profile-item" onclick="openProfileDetail('${currentUser.id}')">
                 <div class="profile-img" style="background-image: url('${currentUser.img}')"></div>
                 <div class="profile-info">
-                    <div class="name">${currentUser.name}</div>
-                    <div class="sub">${currentUser.birth}</div>
+                    <div class="name">${currentUser.name} ${currentUser.isArtist ? '⭐' : '✉️'}</div>
+                    <div class="sub">${currentUser.status.replace(/@@@/g, currentUser.name)}</div>
                 </div>
             </div>
         `;
 
-        // 친구 목록 전체 자동 동기화 
         const friendContainer = document.getElementById('friend-list-container');
         friendContainer.innerHTML = '';
         
-        const friends = USERS.filter(u => u.id !== currentUser.id);
-        friends.forEach(f => {
+        // [수정] 오직 '아티스트' 자격을 가진 유저들만 친구 목록에 노출되도록 제한 (팬은 미노출)
+        const displayTargets = USERS.filter(u => u.id !== currentUser.id && u.isArtist === true);
+        
+        if(displayTargets.length === 0) {
+            friendContainer.innerHTML = `<div style="padding:15px 0; font-size:13px; color:var(--text-muted);">표시할 아티스트가 없습니다.</div>`;
+            return;
+        }
+
+        displayTargets.forEach(f => {
             const row = document.createElement('div');
             row.className = 'profile-item';
             row.onclick = () => openProfileDetail(f.id);
             row.innerHTML = `
                 <div class="profile-img" style="background-image: url('${f.img}')"></div>
                 <div class="profile-info">
-                    <div class="name">${f.name}</div>
-                    <div class="sub">${f.status}</div>
+                    <div class="name">${f.name} ⭐</div>
+                    <div class="sub">${f.status.replace(/@@@/g, currentUser.name)}</div>
                 </div>
             `;
             friendContainer.appendChild(row);
         });
     }
 
-    // 프로필 세부화면 열기
     function openProfileDetail(userId) {
         const target = USERS.find(u => u.id === userId);
         if(!target) return;
@@ -869,71 +915,44 @@
         document.getElementById('detail-bg-img').style.backgroundImage = `url('${target.bg}')`;
         document.getElementById('detail-user-img').style.backgroundImage = `url('${target.img}')`;
         document.getElementById('detail-user-name').innerText = target.name;
-        document.getElementById('detail-user-status').innerText = target.status;
+        document.getElementById('detail-user-status').innerText = target.status.replace(/@@@/g, currentUser.name);
 
         const chatBtn = document.getElementById('detail-chat-turn-btn');
-        
-        // 내 프로필이거나 타인 프로필이거나 관계없이 실시간 1:1 대화 추적기 가동
         chatBtn.onclick = () => {
             closeSubScreen('sub-profile-detail');
-            startDirectChat(target);
+            // 아티스트 전용 소통 채널 연결 우선 탐색
+            let bubbleRoom = ROOMS.find(r => r.isBubble && (r.artistId === target.id || r.artistId === currentUser.id));
+            if(bubbleRoom) {
+                openChatRoom(bubbleRoom.id);
+            } else {
+                alert('연결 가능한 전용 채널방이 존재하지 않습니다.');
+            }
         };
 
         openSubScreen('sub-profile-detail');
     }
 
-    // 1:1 채팅방 조회 혹은 실시간 고속 생성 후 즉각 안전 진입
-    function startDirectChat(targetUser) {
-        if(targetUser.id === currentUser.id) {
-            alert('나 자신과의 대화는 지원하지 않습니다. 다른 친구를 선택하세요.');
-            return;
-        }
-
-        let room = ROOMS.find(r => r.isGroup === false && r.members.includes(currentUser.id) && r.members.includes(targetUser.id));
-        
-        if(!room) {
-            room = {
-                id: 'room_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
-                isGroup: false,
-                roomName: targetUser.name,
-                img: targetUser.img,
-                members: [currentUser.id, targetUser.id],
-                messages: []
-            };
-            ROOMS.push(room);
-            saveData();
-        }
-        openChatRoom(room.id);
-    }
-
-    // 3. 채팅 탭 메인 리스트 제어
     function renderChatTab() {
         const container = document.getElementById('chat-list-container');
         container.innerHTML = '';
 
-        // 유저가 속해있는 채팅방만 정확하게 필터
         const myRooms = ROOMS.filter(r => r.members.includes(currentUser.id));
 
         if(myRooms.length === 0) {
-            container.innerHTML = `<div style="text-align:center; color:var(--text-muted); margin-top:40px; font-size:14px;">참여 중인 채팅방이 없습니다.</div>`;
+            container.innerHTML = `<div style="text-align:center; color:var(--text-muted); margin-top:30px; font-size:13px;">대화 채널이 없습니다.</div>`;
             return;
         }
 
         myRooms.forEach(r => {
             let displayTitle = r.roomName;
-            let displayImg = r.img || 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=150';
+            let displayImg = r.img;
             
-            // 1:1 채팅방인 경우 상대방 이름과 프사로 보정 출력
-            if(!r.isGroup) {
-                const otherId = r.members.find(m => m !== currentUser.id);
-                const otherUser = USERS.find(u => u.id === otherId);
-                if(otherUser) {
-                    displayTitle = otherUser.name;
-                    displayImg = otherUser.img;
-                }
+            // 마지막 인덱스 메시지 가공 처리 후 미리보기 연동
+            let lastMsg = '대화 내용이 없습니다.';
+            if(r.messages.length > 0) {
+                let lastItem = r.messages[r.messages.length - 1];
+                lastMsg = lastItem.text.replace(/@@@/g, currentUser.name);
             }
-
-            const lastMsg = r.messages.length > 0 ? r.messages[r.messages.length - 1].text : '대화 내용이 없습니다.';
 
             const item = document.createElement('div');
             item.className = 'profile-item';
@@ -941,7 +960,7 @@
             item.innerHTML = `
                 <div class="profile-img" style="background-image: url('${displayImg}')"></div>
                 <div class="profile-info">
-                    <div class="name">${displayTitle} <span style="font-size:12px; color:var(--text-muted); font-weight:normal;">(${r.members.length}명)</span></div>
+                    <div class="name">${displayTitle} <span style="font-size:11px; color:var(--text-muted); font-weight:normal;">[Private Mode]</span></div>
                     <div class="sub">${lastMsg}</div>
                 </div>
             `;
@@ -949,74 +968,12 @@
         });
     }
 
-    // 그룹채팅 생성 모달 컨트롤
-    function openCreateChatModal() {
-        const container = document.getElementById('invite-checkbox-container');
-        container.innerHTML = '';
-        
-        const friends = USERS.filter(u => u.id !== currentUser.id);
-        friends.forEach(f => {
-            const div = document.createElement('div');
-            div.className = 'check-item';
-            div.innerHTML = `
-                <input type="checkbox" value="${f.id}" class="create-chat-check">
-                <div class="profile-img" style="width:40px; height:40px; background-image:url('${f.img}')"></div>
-                <div style="font-weight:600;">${f.name}</div>
-            `;
-            container.appendChild(div);
-        });
-
-        document.getElementById('new-chat-title').value = '';
-        openSubScreen('sub-create-chat');
-    }
-
-    function submitCreateChat() {
-        const title = document.getElementById('new-chat-title').value.trim();
-        if(!title) { alert('채팅방 이름을 입력하세요.'); return; }
-
-        const checkedBoxes = document.querySelectorAll('.create-chat-check:checked');
-        let selectedMembers = [currentUser.id];
-        checkedBoxes.forEach(box => selectedMembers.push(box.value));
-
-        if(selectedMembers.length < 2) {
-            alert('최소 1명 이상의 친구를 선택하셔야 그룹채팅 생성이 가능합니다.');
-            return;
-        }
-
-        const newRoom = {
-            id: 'room_' + Date.now(),
-            isGroup: true,
-            roomName: title,
-            img: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=150', // 그룹 기본 이미지
-            members: selectedMembers,
-            messages: []
-        };
-
-        ROOMS.push(newRoom);
-        saveData();
-        closeSubScreen('sub-create-chat');
-        renderChatTab();
-        openChatRoom(newRoom.id);
-    }
-
-    // 4. 완벽 대화방 트랜잭션 (더블 전송 버그 원천 차단형)
-    let messageSubmitLock = false; // 더블 전송 방지 전역 락커
-
     function openChatRoom(roomId) {
         activeRoomId = roomId;
         const room = ROOMS.find(r => r.id === roomId);
         if(!room) return;
 
-        // 헤더 룸 이름 바인딩
-        let displayTitle = room.roomName;
-        if(!room.isGroup) {
-            const otherId = room.members.find(m => m !== currentUser.id);
-            const otherUser = USERS.find(u => u.id === otherId);
-            if(otherUser) displayTitle = otherUser.name;
-        }
-        document.getElementById('chat-room-title-text').innerText = displayTitle;
-        
-        // 메시지 내역 렌더링
+        document.getElementById('chat-room-title-text').innerText = room.roomName;
         renderMessages();
         openSubScreen('sub-chat-room');
     }
@@ -1024,9 +981,10 @@
     function closeChatRoom() {
         closeSubScreen('sub-chat-room');
         activeRoomId = null;
-        renderChatTab(); // 목록 최신화
+        renderChatTab();
     }
 
+    /* [수정 핵심] 버블 특화 프라이빗 필터링 렌더링 파트 */
     function renderMessages() {
         const container = document.getElementById('chat-msg-container');
         container.innerHTML = '';
@@ -1035,39 +993,47 @@
         if(!room) return;
 
         room.messages.forEach(m => {
+            // 팬 로그인 시: 아티스트 본인의 대화이거나 혹은 '나' 자신이 보낸 메시지만 타임라인에 합산 노출
+            if(!currentUser.isArtist) {
+                if(m.senderId !== room.artistId && m.senderId !== currentUser.id) {
+                    return; // 다른 팬이 작성한 대화는 필터링 생략
+                }
+            }
+
             const row = document.createElement('div');
-            
+            // 치환 연동: @@@ 키워드를 조회자의 닉네임으로 교체
+            let processedText = m.text.replace(/@@@/g, currentUser.name);
+
             if(m.senderId === currentUser.id) {
                 row.className = 'msg-row me';
-                row.innerHTML = `
-                    <div class="msg-bubble">${m.text}</div>
-                `;
+                row.innerHTML = `<div class="msg-bubble">${processedText}</div>`;
             } else {
                 row.className = 'msg-row other';
-                const sender = USERS.find(u => u.id === m.senderId) || { name: "알수없음", img: "" };
+                const sender = USERS.find(u => u.id === m.senderId) || { name: m.senderName || "임의팬", img: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150" };
                 row.innerHTML = `
-                    <div class="profile-img" style="width:36px; height:36px; background-image:url('${sender.img}')"></div>
+                    <div class="profile-img" style="width:34px; height:34px; background-image:url('${sender.img}')"></div>
                     <div class="msg-other-content">
                         <div class="msg-other-top">${sender.name} <span style="font-size:10px; font-weight:normal; margin-left:4px;">${m.time}</span></div>
-                        <div class="msg-bubble">${m.text}</div>
+                        <div class="msg-bubble">${processedText}</div>
                     </div>
                 `;
             }
             container.appendChild(row);
         });
         
-        // 스크롤 즉시 최하단 자동 이동
         container.scrollTop = container.scrollHeight;
     }
 
+    let messageSubmitLock = false;
+
     function sendMessage() {
-        if(messageSubmitLock) return; // 락 걸려있으면 전송 거절
+        if(messageSubmitLock) return;
 
         const inputField = document.getElementById('chat-typing-field');
         const text = inputField.value.trim();
         if(!text) return;
 
-        messageSubmitLock = true; // 즉각 고속 잠금 처리
+        messageSubmitLock = true;
 
         const roomIndex = ROOMS.findIndex(r => r.id === activeRoomId);
         if(roomIndex !== -1) {
@@ -1076,6 +1042,7 @@
             
             const newMsg = {
                 senderId: currentUser.id,
+                senderName: currentUser.name,
                 text: text,
                 time: timeStr
             };
@@ -1084,46 +1051,17 @@
             saveData();
             renderMessages();
             inputField.value = '';
-
-            // 가상 테스트 원활함을 위한 시스템 상대방 오토 리플라이 시뮬레이션 인터벌 (오류 검증용)
-            if(ROOMS[roomIndex].members.length > 1) {
-                simulatePartnerReply(roomIndex);
-            }
         }
 
-        setTimeout(() => { messageSubmitLock = false; }, 100); // 0.1초 뒤 자동 해제
-    }
-
-    // 상대방 자동 답변봇 시뮬레이션 (동작 테스트 확인 용이성 확보 목적)
-    function simulatePartnerReply(roomIndex) {
-        const otherMembers = ROOMS[roomIndex].members.filter(m => m !== currentUser.id);
-        if(otherMembers.length === 0) return;
-        
-        const randomSender = otherMembers[Math.floor(Math.random() * otherMembers.length)];
-        
-        setTimeout(() => {
-            // 아직 유저가 해당 방에 머물러 있을 때만 전송
-            if(activeRoomId === ROOMS[roomIndex].id) {
-                const now = new Date();
-                const timeStr = now.getHours() + ":" + String(now.getMinutes()).padStart(2, '0');
-                ROOMS[roomIndex].messages.push({
-                    senderId: randomSender,
-                    text: "✨ MOO:DROP 정상 응답이 완료되었습니다.",
-                    time: timeStr
-                });
-                saveData();
-                renderMessages();
-            }
-        }, 1000);
+        setTimeout(() => { messageSubmitLock = false; }, 100);
     }
 
     function triggerDummyPhoto() {
         const inputField = document.getElementById('chat-typing-field');
-        inputField.value = "📷 [사진 전송 완료] ";
+        inputField.value = "📷 [보안 프로필 인증 사진 발송]";
         sendMessage();
     }
 
-    // 5. 채팅방 디테일 설정 모달 제어
     function openChatRoomSetting() {
         const room = ROOMS.find(r => r.id === activeRoomId);
         if(!room) return;
@@ -1131,33 +1069,21 @@
         document.getElementById('edit-chatroom-title').value = room.roomName;
         document.getElementById('edit-chatroom-img').value = room.img || '';
 
-        // 멤버 리스트와 내보내기/초대 구현
         const listContainer = document.getElementById('chatroom-member-list');
         listContainer.innerHTML = '';
 
-        // 전체 유저 중 방에 없는 유저는 초대 가능 옵션 추가를 위해 목록 분할
-        USERS.forEach(u => {
-            const isMember = room.members.includes(u.id);
+        // 아티스트 채널 기준 참여 명단 시각화 가공
+        room.members.forEach(mid => {
+            const u = USERS.find(user => user.id === mid);
+            if(!u) return;
             const row = document.createElement('div');
-            row.style.cssText = "display:flex; justify-content:between; align-items:center; padding:8px 0; border-bottom:1px solid #f2f2f7; font-size:14px;";
-            
-            if(isMember) {
-                row.innerHTML = `
-                    <div style="display:flex; align-items:center; gap:8px;">
-                        <div class="profile-img" style="width:30px; height:30px; background-image:url('${u.img}')"></div>
-                        <div>${u.name} (참여중)</div>
-                    </div>
-                `;
-            } else {
-                // 나간 사람 혹은 미참여원 실시간 즉각 재초대 버튼 활성화
-                row.innerHTML = `
-                    <div style="display:flex; align-items:center; gap:8px; opacity:0.6;">
-                        <div class="profile-img" style="width:30px; height:30px; background-image:url('${u.img}')"></div>
-                        <div>${u.name}</div>
-                    </div>
-                    <button class="btn-small-gray" style="padding:4px 8px; font-size:11px;" onclick="inviteUserToActiveRoom('${u.id}')">초대</button>
-                `;
-            }
+            row.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid #f2f2f7; font-size:13px;";
+            row.innerHTML = `
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <div class="profile-img" style="width:26px; height:26px; background-image:url('${u.img}')"></div>
+                    <div>${u.name} ${u.isArtist ? '⭐' : '[FAN]'}</div>
+                </div>
+            `;
             listContainer.appendChild(row);
         });
 
@@ -1172,50 +1098,23 @@
         const newImg = document.getElementById('edit-chatroom-img').value.trim();
 
         if(!newTitle) { alert('방 이름을 입력하세요.'); return; }
-        
         room.roomName = newTitle;
         if(newImg) room.img = newImg;
 
         saveData();
-        alert('채팅방 설정이 성공적으로 변경되었습니다.');
+        alert('채팅방 정보가 저장되었습니다.');
         closeSubScreen('sub-chat-setting');
         document.getElementById('chat-room-title-text').innerText = newTitle;
     }
 
-    function inviteUserToActiveRoom(userId) {
-        const room = ROOMS.find(r => r.id === activeRoomId);
-        if(!room) return;
-        
-        if(!room.members.includes(userId)) {
-            room.members.push(userId);
-            saveData();
-            openChatRoomSetting(); // 리스트 새로고침
-            renderMessages();
-        }
-    }
-
     function leaveChatRoom() {
-        const roomIndex = ROOMS.findIndex(r => r.id === activeRoomId);
-        if(roomIndex === -1) return;
-
-        // 멤버 목록에서 현재 유저 제거
-        ROOMS[roomIndex].members = ROOMS[roomIndex].members.filter(m => m !== currentUser.id);
-        
-        // 만약 방에 아무도 안남아있다면 완전 삭제 파괴 메커니즘 실행해 데이터 부하 제거
-        if(ROOMS[roomIndex].members.length === 0) {
-            ROOMS.splice(roomIndex, 1);
-        }
-
-        saveData();
+        alert('아티스트 소통 전용방은 나갈 수 없습니다.');
         closeSubScreen('sub-chat-setting');
-        closeChatRoom();
     }
 
-
-    // 6. OTHER 탭 내부 세부 옵션 기능 제어
     function renderOtherTab() {
         document.getElementById('other-my-img').style.backgroundImage = `url('${currentUser.img}')`;
-        document.getElementById('other-my-name').innerText = currentUser.name;
+        document.getElementById('other-my-name').innerText = currentUser.name + (currentUser.isArtist ? " (아티스트)" : " (일반 회원)");
     }
 
     function openSettingModal() {
@@ -1232,33 +1131,23 @@
         const img = document.getElementById('set-my-img').value.trim();
         const bg = document.getElementById('set-my-bg').value.trim();
 
-        if(!name) { alert('이름은 공백일 수 없습니다.'); return; }
+        if(!name) { alert('이름은 필수 항목입니다.'); return; }
 
         currentUser.name = name;
         currentUser.status = status;
         if(img) currentUser.img = img;
         if(bg) currentUser.bg = bg;
 
-        // 전체 유저 풀 동기화 업데이트 적용
         const idx = USERS.findIndex(u => u.id === currentUser.id);
         if(idx !== -1) USERS[idx] = currentUser;
 
         saveData();
         closeSubScreen('sub-my-setting');
         renderOtherTab();
-        alert('개인 설정이 저장되었습니다.');
+        alert('내 프로필이 변경되었습니다.');
     }
 
-    // 공지사항 로직
     function openNoticeModal() {
-        // 관리자 아이디 [ jse131121@mood.com ] 검증 후 쓰기 권한 노출 결정
-        const adminBtn = document.getElementById('admin-notice-write-btn');
-        if(currentUser.id === "jse131121@mood.com") {
-            adminBtn.style.display = 'block';
-        } else {
-            adminBtn.style.display = 'none';
-        }
-        
         document.getElementById('admin-notice-form').style.display = 'none';
         renderNotices();
         openSubScreen('sub-notice');
@@ -1272,8 +1161,7 @@
     function submitNotice() {
         const title = document.getElementById('new-notice-title').value.trim();
         const content = document.getElementById('new-notice-content').value.trim();
-
-        if(!title || !content) { alert('공지 내용을 입력하세요.'); return; }
+        if(!title || !content) return;
 
         let notices = JSON.parse(localStorage.getItem('mood_notices')) || [];
         notices.unshift({ title, content });
@@ -1288,17 +1176,20 @@
     function renderNotices() {
         const container = document.getElementById('notice-list-container');
         container.innerHTML = '';
-        
         let notices = JSON.parse(localStorage.getItem('mood_notices')) || [];
+        if(notices.length === 0) {
+            container.innerHTML = `<div style="text-align:center; padding:20px; font-size:13px; color:var(--text-muted);">공지사항이 비어있습니다.</div>`;
+            return;
+        }
         notices.forEach((n, index) => {
             const item = document.createElement('div');
             item.className = 'notice-item';
             item.innerHTML = `
                 <div class="notice-title-bar" onclick="toggleNoticeContent(${index})">
                     <span>📌 ${n.title}</span>
-                    <span id="notice-arrow-${index}" style="font-size:12px; color:var(--text-muted);">▼</span>
+                    <span id="notice-arrow-${index}">▼</span>
                 </div>
-                <div class="notice-content" id="notice-content-${index}">${n.content.replace(/\n/g, '<br>')}</div>
+                <div class="notice-content" id="notice-content-${index}">${n.content}</div>
             `;
             container.appendChild(item);
         });
