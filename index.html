@@ -38,7 +38,7 @@
             width: 100%;
             max-width: 390px;
             height: 100%;
-            max-height: 95vh; 
+            max-height: 96vh; 
             background-color: var(--bg-color);
             position: relative;
             overflow: hidden;
@@ -291,7 +291,7 @@
         }
         .sub-screen.active { display: flex; }
 
-        /* 프로필 상세 보기 화면 구조 레이어 개선 */
+        /* 프로필 레이어 격리 최적화: 배사와 프사 안 겹치고 온전히 드러나게 셋팅 */
         .profile-detail-bg {
             height: 35%;
             background-size: cover;
@@ -399,6 +399,7 @@
         .msg-meta { font-size: 10px; color: var(--text-muted); display: flex; align-items: flex-end; margin: 0 4px; }
         .msg-other-top { font-size: 11px; color: var(--text-muted); font-weight: 500; display: flex; align-items: center; gap: 4px; }
 
+        /* 하단 바 및 스티커 컨테이너 규격화 */
         .chat-input-bar {
             padding: 8px 10px 15px 10px;
             background: #ffffff;
@@ -408,10 +409,11 @@
             gap: 6px;
             width: 100%;
             flex-shrink: 0;
+            position: relative;
         }
-        .chat-cam-btn {
-            width: 38px;
-            height: 38px;
+        .chat-cam-btn, .chat-sticker-btn {
+            width: 36px;
+            height: 36px;
             background-color: #f2f2f7;
             border-radius: 10px;
             display: flex;
@@ -421,10 +423,10 @@
             border: none;
             flex-shrink: 0;
         }
-        .chat-cam-btn svg { width: 20px; height: 20px; fill: var(--text-muted); }
+        .chat-cam-btn svg, .chat-sticker-btn svg { width: 18px; height: 18px; fill: var(--text-muted); }
         .chat-text-input {
             flex: 1;
-            height: 38px;
+            height: 36px;
             background-color: #f2f2f7;
             border: none;
             border-radius: 18px;
@@ -433,8 +435,8 @@
             outline: none;
         }
         .chat-send-btn {
-            height: 38px;
-            padding: 0 14px;
+            height: 36px;
+            padding: 0 12px;
             background-color: var(--text-main);
             color: #ffffff;
             border: none;
@@ -444,6 +446,33 @@
             cursor: pointer;
             flex-shrink: 0;
         }
+
+        /* 공감 스티커 트레이 스타일 (20종 배치 전용) */
+        .sticker-tray-panel {
+            position: absolute;
+            bottom: 60px;
+            left: 10px;
+            width: calc(100% - 20px);
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            display: none;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            z-index: 30;
+        }
+        .sticker-tray-panel.active { display: grid; }
+        .sticker-item-box {
+            font-size: 24px;
+            text-align: center;
+            padding: 5px 0;
+            cursor: pointer;
+            transition: transform 0.1s;
+            user-select: none;
+        }
+        .sticker-item-box:active { transform: scale(1.2); }
 
         .setting-box-container {
             display: flex;
@@ -473,7 +502,6 @@
 
 <div id="app">
 
-    <!-- 로그인/회원가입 메인 게이트 -->
     <div id="screen-intro" class="screen active">
         <div class="intro-top">
             <h1 style="color: #000000; font-weight:900;">MOO:DROP</h1>
@@ -485,7 +513,6 @@
         </div>
     </div>
 
-    <!-- 로그인 스크린 -->
     <div id="screen-login" class="screen form-screen">
         <div class="form-header"><h2>로그인</h2></div>
         <div class="form-group">
@@ -500,7 +527,6 @@
         <div class="back-text-btn" onclick="showScreen('screen-intro')">돌아가기</div>
     </div>
 
-    <!-- 회원가입 스크린 -->
     <div id="screen-register" class="screen form-screen">
         <div class="form-header"><h2>회원가입</h2></div>
         <div class="form-group">
@@ -527,7 +553,6 @@
         <div class="back-text-btn" onclick="showScreen('screen-intro')">돌아가기</div>
     </div>
 
-    <!-- PROFILE 탭 -->
     <div id="tab-profile" class="screen">
         <div class="screen-header">PROFILE</div>
         <div class="scroll-content">
@@ -539,7 +564,6 @@
         </div>
     </div>
 
-    <!-- CHAT 탭 -->
     <div id="tab-chat" class="screen">
         <div class="screen-header">CHAT</div>
         <div class="scroll-content">
@@ -547,7 +571,6 @@
         </div>
     </div>
 
-    <!-- OTHER 탭 -->
     <div id="tab-other" class="screen">
         <div class="screen-header">OTHER</div>
         <div class="scroll-content">
@@ -568,20 +591,18 @@
         </div>
     </div>
 
-    <!-- 고정 하단 탭 내비게이션 바 -->
     <div id="main-bottom-nav" class="bottom-nav" style="display: none;">
         <div class="nav-item active" id="nav-prof" onclick="switchTab('profile')">
             <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         </div>
         <div class="nav-item" id="nav-chat" onclick="switchTab('chat')">
-            <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
         </div>
         <div class="nav-item" id="nav-oth" onclick="switchTab('other')">
             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
         </div>
     </div>
 
-    <!-- 서브 레이어: 프로필 상세 팝업 -->
     <div id="sub-profile-detail" class="sub-screen">
         <div class="profile-detail-bg" id="detail-bg-img">
             <button class="close-btn" onclick="closeSubScreen('sub-profile-detail')">
@@ -598,7 +619,6 @@
         </div>
     </div>
 
-    <!-- 서브 레이어: 프라이빗 1:N 버블 전용 통합 대화방 -->
     <div id="sub-chat-room" class="sub-screen" style="background-color: #f2f2f7;">
         <div class="chat-room-header">
             <div class="chat-room-left">
@@ -607,15 +627,21 @@
             </div>
             <div class="setting-icon-btn" onclick="openChatRoomSetting()"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
         </div>
+        
         <div class="chat-messages-area" id="chat-msg-container"></div>
+        
         <div class="chat-input-bar">
+            <div id="sticker-tray" class="sticker-tray-panel"></div>
+
             <button class="chat-cam-btn" onclick="triggerDummyPhoto()"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></button>
+            <button class="chat-sticker-btn" onclick="toggleStickerTray()">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+            </button>
             <input type="text" class="chat-text-input" id="chat-typing-field" placeholder="메시지를 입력하세요" onkeypress="if(event.keyCode==13) sendMessage()">
             <button class="chat-send-btn" onclick="sendMessage()">전송</button>
         </div>
     </div>
 
-    <!-- 서브 레이어: 채팅방 단독 설정 -->
     <div id="sub-chat-setting" class="sub-screen" style="padding: 30px 20px; overflow-y: auto;">
         <div class="form-header"><h2>채팅방 설정</h2></div>
         <div class="form-group"><label>채팅방 이름 변경</label><input type="text" id="edit-chatroom-title"></div>
@@ -627,7 +653,6 @@
         <div class="back-text-btn" onclick="closeSubScreen('sub-chat-setting')">닫기</div>
     </div>
 
-    <!-- 서브 레이어: 마이 프로필 셋팅 수정 모달 -->
     <div id="sub-my-setting" class="sub-screen form-screen">
         <div class="form-header"><h2>프로필 설정 변경</h2></div>
         <div class="form-group"><label>이름</label><input type="text" id="set-my-name"></div>
@@ -641,6 +666,13 @@
 </div>
 
 <script>
+    // 하트 6종 + 감정 및 표정 14종 = 총 20종 스티커 리스트 데이터 규격 정의
+    const STICKERS = [
+        "❤️", "🧡", "💛", "💚", "💙", "💜", 
+        "🥰", "😍", "🤩", "😘", "😋", "😛", 
+        "🤣", "😂", "😭", "🥺", "😤", "😡", "🤯", "😎"
+    ];
+
     const fallbackUsers = [
         { id: "artist1@mood.com", pw: "1234", name: "루카(LUCA)", birth: "2004-03-15", status: "오늘도 연습 중이야 언제나 화이팅이야!", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150", bg: "https://images.unsplash.com/photo-1557683316-973673baf926?w=500", isArtist: true },
         { id: "artist2@mood.com", pw: "1234", name: "로지(ROSSY)", birth: "2003-11-21", status: "작업실에서 밤샘곡 만드는 중 기대해줘", img: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150", bg: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500", isArtist: true },
@@ -670,6 +702,39 @@
     let ROOMS = JSON.parse(localStorage.getItem('mood_rooms'));
     let currentUser = null;
     let activeRoomId = null;
+
+    // 초기 스티커 트레이 컴포넌트 마운트 로직
+    window.onload = function() {
+        const tray = document.getElementById('sticker-tray');
+        STICKERS.forEach(stk => {
+            const box = document.createElement('div');
+            box.className = 'sticker-item-box';
+            box.innerText = stk;
+            box.onclick = () => sendSticker(stk);
+            tray.appendChild(box);
+        });
+    };
+
+    function toggleStickerTray() {
+        document.getElementById('sticker-tray').classList.toggle('active');
+    }
+
+    function sendSticker(emoji) {
+        document.getElementById('sticker-tray').classList.remove('active');
+        const roomIndex = ROOMS.findIndex(r => r.id === activeRoomId);
+        if(roomIndex !== -1) {
+            const now = new Date();
+            const timeStr = now.getHours() + ":" + String(now.getMinutes()).padStart(2, '0');
+            ROOMS[roomIndex].messages.push({
+                senderId: currentUser.id,
+                senderName: currentUser.name,
+                text: emoji, 
+                time: timeStr
+            });
+            saveData();
+            renderMessages();
+        }
+    }
 
     function getArtistBadgeHtml(isArtist) {
         return isArtist ? `<div class="artist-star-badge"><span>★</span></div>` : '';
@@ -854,11 +919,13 @@
         const room = ROOMS.find(r => r.id === roomId);
         if(!room) return;
         document.getElementById('chat-room-title-text').innerText = room.roomName;
+        document.getElementById('sticker-tray').classList.remove('active'); // 방 이동시 열린 스티커창 초기화
         renderMessages();
         openSubScreen('sub-chat-room');
     }
 
     function closeChatRoom() {
+        document.getElementById('sticker-tray').classList.remove('active');
         closeSubScreen('sub-chat-room');
         activeRoomId = null;
         renderChatTab();
@@ -874,10 +941,14 @@
             if(!currentUser.isArtist && m.senderId !== room.artistId && m.senderId !== currentUser.id) return;
 
             const row = document.createElement('div');
+            
+            // 공감 스티커(단일 이모티콘 표기)일 경우 스타일 사이즈 보정용 판정
+            const isSingleSticker = STICKERS.includes(m.text);
+            const messageStyles = isSingleSticker ? "font-size: 28px; background: transparent; padding:0;" : "";
 
             if(m.senderId === currentUser.id) {
                 row.className = 'msg-row me';
-                row.innerHTML = `<div class="msg-bubble">${m.text}</div>`;
+                row.innerHTML = `<div class="msg-bubble" style="${messageStyles}">${m.text}</div>`;
             } else {
                 row.className = 'msg-row other';
                 const sender = USERS.find(u => u.id === m.senderId) || { name: m.senderName, img: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150", isArtist: false };
@@ -885,7 +956,7 @@
                     <div class="profile-img" style="width:34px; height:34px; background-image:url('${sender.img}')"></div>
                     <div class="msg-other-content">
                         <div class="msg-other-top">${sender.name} ${getArtistBadgeHtml(sender.isArtist)} <span style="font-size:10px; font-weight:normal; margin-left:4px;">${m.time}</span></div>
-                        <div class="msg-bubble">${m.text}</div>
+                        <div class="msg-bubble" style="${messageStyles}">${m.text}</div>
                     </div>
                 `;
             }
